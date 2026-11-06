@@ -1,16 +1,13 @@
 import numpy as np
-from scipy.integrate import quad, solve_ivp
-import matplotlib.pyplot as plt
-#pip install numpy scipy matplotlib sympy
 
-# Integral de sin(x) entre 0 i pi (hauria de donar 2)
-valor, error = quad(np.sin, 0, np.pi)
-print("Integral:", valor)
+#Definim primer les condicions inicials
+T_cos = 36.5 + 273 #K, temperatura inicial i a la frontera
+k = 0.56 #W/(m*K)
+cv = 3698 #J/(kg*K)
+rho = 1081 #kg/m^3
+sigma = 0.472 #S/m
+alpha = k/(cv*rho)
 
-# EDO: y' = -y, y(0) = 1  (solució exacta: e^-t)
-sol = solve_ivp(lambda t, y: -y, [0, 5], [1], dense_output=True)
-t = np.linspace(0, 5, 100)
-plt.plot(t, sol.sol(t)[0], label="numèrica")
-plt.plot(t, np.exp(-t), "--", label="exacta")
-plt.legend()
-plt.show()
+#Constants de normalització
+l_0 = np.sqrt(k*T_cos)
+t_0 = l_0**2/alpha
