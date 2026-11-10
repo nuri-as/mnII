@@ -60,6 +60,18 @@ while k<=2:
     #Per cada h, li demano que m'imprimeixi aquest vector T.
     print('Pel cas h= ',h[k], 'el vector temperatura final és: ', T_final)
 
+   
+    #fem el plot per treure el gràfic
+    x_espai=np.linspace(0, 1, N)
+    plt.plot(x_espai, T_final, label='h= ' + str(h[k])) #aquesta linia ha d'estar dins del bucle per tenir un sol grafic
     k+= 1
+
+plt.xlabel('x')
+plt.ylabel('T/T0')
+plt.title('Distribució de temperatura')       
+plt.legend()
+plt.show()
+
+    
 
 
