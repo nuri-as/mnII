@@ -25,9 +25,7 @@ Delta_x = 1/(N-1) #perquè al normalitzar, el domini de x és [0,1]
 h=[h1, h2, h3]
 dt = [h1*Delta_x**2, h2*Delta_x**2, h3*Delta_x**2]
 
-k = 0
-
-
+k = 0   
 while k<=2:
     Delta_t = dt[k]
 
@@ -43,35 +41,51 @@ while k<=2:
 
     gamma = Delta_t / Delta_x**2
 
-    #escrivim l'edo trobada i fem el bucle
-    
+
     for j in range(t_passes):
         for i in range(1, N-1):
             T[j+1,i] = T[j,i] + gamma*(T[j, i+1] -2*T[j,i]+T[j,i-1]) + Delta_t
 
-
+    
 
     #print(T[t_passes]) #aquesta serà la matriu
 
-    #per obtenir els valors de les temperatures a t_a (t_max), li demano que em tregui la última fila.
-    #tindré les temperatures finals per cada posicio (N)
-    T_final = T[-1, :]
+    #per obtenir els valors de les temperatures a t_a (t_max), li demano que em tregui la ultima fila.
 
-    #Per cada h, li demano que m'imprimeixi aquest vector T.
+
+    #tinc les temperatures finals per cada posicio (N)
+    T_final = T[-1, :]
     print('Pel cas h= ',h[k], 'el vector temperatura final és: ', T_final)
 
-   
-    #fem el plot per treure el gràfic
+    #ara fem el plot de la distribució de temperatura per cada h:
+
+    #Generem les x, que com estan uniformement distribuïdes, les podem generar amb linspace, amb N punts entre 0 i 1.
     x_espai=np.linspace(0, 1, N)
-    plt.plot(x_espai, T_final, label='h= ' + str(h[k])) #aquesta linia ha d'estar dins del bucle per tenir un sol grafic
+
+    colors = ['aquamarine', 'mediumturquoise', 'teal']
+    plt.plot(x_espai, T_final, label='h= ' + str(h[k]), color=colors[k])
+    
+
+    plt.xlabel('x')
+    plt.ylabel('T/T0')
+    plt.title('Distribució de temperatura')       
+    plt.legend()
+
     k+= 1
 
-plt.xlabel('x')
-plt.ylabel('T/T0')
-plt.title('Distribució de temperatura')       
-plt.legend()
+    #fem plt show fora del bucle.
 plt.show()
 
     
 
+    
 
+
+
+
+
+    
+
+
+    
+    
