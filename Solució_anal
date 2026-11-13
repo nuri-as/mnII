@@ -20,22 +20,24 @@ T0 = sigma * (Delta_V)**2 / (alpha*k)
 
 # Definim la funció per calcular la solució analítica:
 def T_analitica(x_tilde, t_tilde, Tcos, T0, n_termes):
+
+    p1 = np.pi
+    ter_temp1 = (1.0 - np.exp(-(p1**2) * t_tilde)) / (p1**2)
+    ter_pos1 = np.sin(p1 * x_tilde)
     
+    T = (Tcos / T0) + (4 / p1) * ter_temp1 * ter_pos1 #T inicial n=1
+
     #fem un for per calcular el sumatori:
     for n in range(2, n_termes + 1):
 
         #Posem el terme inicial T, perquè així té un valor a partir del qual anar sumant els altres termes.
-        p1 = np.pi
-        ter_temp1 = (1.0 - np.exp(-(p1**2) * t_tilde)) / (p1**2)
-        ter_pos1 = np.sin(p1 * x_tilde)
-
-        T = (Tcos / T0) + (4 / p1) * ter_temp1 * ter_pos1 #T inicial n=1
+        
 
         p=(2*n-1)*np.pi
         ter_temp = (1.0 - np.exp(-(p**2) * t_tilde)) / (p**2)
         ter_pos = np.sin(p * x_tilde)
 
-        T+= 4/p * ter_temp * ter_pos
+        T+= (4/p * ter_temp * ter_pos)
 
     return T
 
@@ -44,7 +46,7 @@ x_espai=np.linspace(0, 1, N)  # Espai normalitzat
 
 plt.plot(
     x_espai,
-    T_analitica(x_espai, t_max, T_cos, T0,1000000),
+    T_analitica(x_espai, t_max, T_cos, T0,300),
     color="royalblue",
     linewidth=2,
     label=f"$\\tilde{{t}}_a = {t_max}$",
@@ -57,4 +59,6 @@ plt.ylabel("$\\tilde{T}(\\tilde{x}, \\tilde{t}_a)$")
 plt.legend()
 plt.grid(True, alpha=0.3)
 plt.show()
+
+
 
