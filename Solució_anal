@@ -35,7 +35,7 @@ def T_analitica(x_tilde, t_tilde, Tcos, T0, n_termes):
         ter_temp = (1.0 - np.exp(-(p**2) * t_tilde)) / (p**2)
         ter_pos = np.sin(p * x_tilde)
 
-        T+=Tcos/T0 + (4/p * ter_temp * ter_pos)
+        T+= 4/p * ter_temp * ter_pos
 
     return T
 
