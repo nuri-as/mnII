@@ -3,60 +3,49 @@ import numpy as np
 
 
 #constants i més
-
-T_cos = 36.5 + 273 #K, temperatura inicial i a la frontera
-k = 0.56 #W/(m*K)
+T_cos = 36.5+273 #K, temperatura inicial i a la frontera
+z = 0.56 #W/(m*K)
 cv = 3698 #J/(kg*K)
 rho = 1081 #kg/m^3
 sigma = 0.472 #S/m
-alpha = k/(cv*rho)
+alpha = z/(cv*rho)
 Delta_V = 40 #V
 t_max=0.025
 N=101
 
-T0 = sigma * (Delta_V)**2 / (alpha*k)
+#Constants de normalització
+T0 = sigma * (Delta_V)**2 / (2*z)
+d = 0.02 #m, gruix de paret entre els ventricles
+t0 = d**2/alpha
 
-
-
-# Definim la funció per calcular la solució analítica:
+# Definim la funció per calcular la solució analítica amb les variables normalitzades:
 def T_analitica(x_tilde, t_tilde, Tcos, T0, n_termes):
+  T= Tcos / T0 #terme de fora del sumatori
 
-    p1 = np.pi
-    ter_temp1 = (1.0 - np.exp(-(p1**2) * t_tilde)) / (p1**2)
-    ter_pos1 = np.sin(p1 * x_tilde)
-    
-    T = (Tcos / T0) + (4 / p1) * ter_temp1 * ter_pos1 #T inicial n=1
+  #fem un for per calcular el sumatori:
+  for n in range(1, n_termes + 1):
+    p=(2*n-1)*np.pi
+    ter_temp = (1.0 - np.exp(-(p**2) * t_tilde)) / (p**2)
+    ter_pos = np.sin(p * x_tilde)
 
-    #fem un for per calcular el sumatori:
-    for n in range(2, n_termes + 1):
+    T+= (4/p * ter_temp * ter_pos)
+  return T
 
-        #Posem el terme inicial T, perquè així té un valor a partir del qual anar sumant els altres termes.
-        
-
-        p=(2*n-1)*np.pi
-        ter_temp = (1.0 - np.exp(-(p**2) * t_tilde)) / (p**2)
-        ter_pos = np.sin(p * x_tilde)
-
-        T+= (4/p * ter_temp * ter_pos)
-
-    return T
-
+#Gràfica de la solució analítica en funció de la distància x per l'instant tmax = 0.025
 x_espai=np.linspace(0, 1, N)  # Espai normalitzat
-# Gràfica per a l'instant t_max:
+T_anal = T_analitica(x_espai, t_max, T_cos, T0,300)
 
-plt.plot(
-    x_espai,
-    T_analitica(x_espai, t_max, T_cos, T0,300),
-    color="royalblue",
-    linewidth=2,
-    label=f"$\\tilde{{t}}_a = {t_max}$",
-)
+#"Desnormalitzant, simplement haurem de fer T=T0 * T_tilde (i això per x i t també)
+T_desnorm = T_anal*T0
+x_desnorm = x_espai*d
+t_desnorm = t_max*t0
 
+plt.plot(x_desnorm, T_desnorm, color="royalblue", linewidth=2)
 
-plt.title(f"Perfil de temperatura a $\\tilde{{t}}_a = {t_max}$")
-plt.xlabel("$\\tilde{x}$")
-plt.ylabel("$\\tilde{T}(\\tilde{x}, \\tilde{t}_a)$")
-plt.legend()
+plt.title(rf"Perfil de temperatura a $t_a \approx {t_desnorm:.2f}$ s")
+plt.xlabel("x (m)")
+plt.ylabel("T (k)")
+
 plt.grid(True, alpha=0.3)
 plt.show()
 
