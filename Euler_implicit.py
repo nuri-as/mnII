@@ -51,7 +51,9 @@ error_tolerat = 1e-10 #marquem un màxim de l'error que volem obtenir al fer les
 max_iter = 10000 #posem un límit al nombre d'iteracions que volem fer.
 
 
-llista_col = ['darksalmon', 'mediumvioletred']
+errors = {} #array buit que necessitarem després
+colors = {1: 'deeppink', 0.5: 'mediumvioletred'}
+fig, ax = plt.subplots(1, 2, figsize=(13, 5)) #creem una figura ax on podrem posar 2 subplots
 
 for k in range(len(h)):
     Delta_t = dt[k]
@@ -83,11 +85,9 @@ for k in range(len(h)):
 
             if error_max < error_tolerat:
                    break
-
-
-    t_fin = (len(T) - 1) * Delta_t           # temps real assolit (adimensional)
+    
     x_espai = np.linspace(0, 1, N)
-    T_anal = T_analitica(x_espai, t_fin, T_cos, T0, 200)
+    T_anal = T_analitica(x_espai, t_max, T_cos, T0, 200)
     T_final = T[-1, :]
     
 
@@ -95,19 +95,30 @@ for k in range(len(h)):
     x_desnorm = x_espai * d
     T_desnorm = T_anal*T0
     T_impl = T_final*T0
-    t_desnorm = t_fin * t0
+    t_desnorm = t_max * t0
 
+    ax[0].plot(x_desnorm, T_impl, color=colors[h[k]], linewidth=2, label=rf'Euler implícit, $\Delta t={h[k]}\Delta x^2$')
 
-    plt.plot(x_desnorm, T_impl, '--', color= llista_col[k], linewidth=2,
-               label=f'Euler implícit, h={h[k]}')
+    """
+    Càlcul dels errors
+    """
+    errors[h[k]]=np.abs(T_final - T_anal) * T0  # error absolut en K
+
+    ax[1].plot(x_desnorm, errors[h[k]], color=colors[h[k]], linewidth=1.5, label=rf"$\Delta t={h[k]}\Delta x^2$")
 
 # la solució analítica és la mateixa per a tots dos (mateix t_fin)
-plt.plot(x_desnorm, T_desnorm, 'k', linewidth=1.5, label='Analítica')
+ax[0].plot(x_desnorm, T_desnorm, ':', color='k', linewidth=1, label='Analítica')
 
 
-plt.title(rf"Perfil de temperatura a $t \approx {t_desnorm:.2f}$ s")
-plt.xlabel('x (m)')
-plt.ylabel('T (K)')
-plt.legend()
+ax[0].set_title(rf"Perfil de temperatura a $t_a \approx {t_desnorm:.2f}$ s")
+ax[0].set_xlabel('x (m)')
+ax[0].set_ylabel('T (K)')
+ax[0].legend()
 
+ax[1].set_title("Error numèric per cada mallat")
+ax[1].set_xlabel('x (m)')
+ax[1].set_ylabel(r'$|T_{implícit} - T_{analític}|$ (K)')
+ax[1].legend()
+
+plt.tight_layout()
 plt.show()
