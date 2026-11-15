@@ -75,7 +75,7 @@ for k in range(len(h)):
 
     plt.show()
 
-    #fem plt show fora del bucle.
+
 
 
 
