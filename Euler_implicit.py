@@ -51,8 +51,14 @@ error_tolerat = 1e-10 #marquem un màxim de l'error que volem obtenir al fer les
 max_iter = 10000 #posem un límit al nombre d'iteracions que volem fer.
 
 
-errors = {} #array buit que necessitarem després
-colors = {1: 'deeppink', 0.5: 'mediumvioletred'}
+errors = np.zeros((len(h), N)) #array buit que necessitarem després
+colors = ['deeppink', 'turquoise']
+
+#perquè la lletra es vegi més gran
+plt.rcParams.update({
+    'font.size': 13,
+    'xtick.labelsize': 11
+})
 fig, ax = plt.subplots(1, 2, figsize=(13, 5)) #creem una figura ax on podrem posar 2 subplots
 
 for k in range(len(h)):
@@ -97,16 +103,18 @@ for k in range(len(h)):
     T_impl = T_final*T0
     t_desnorm = t_max * t0
 
-    ax[0].plot(x_desnorm, T_impl, color=colors[h[k]], linewidth=2, label=rf'Euler implícit, $\Delta t={h[k]}\Delta x^2$')
+    #gràfica solcio implicita
+    ax[0].plot(x_desnorm, T_impl, color=colors[k], linewidth=2, label=rf'Euler implícit, $\Delta t={h[k]}\Delta x^2$')
 
     """
     Càlcul dels errors
     """
-    errors[h[k]]=np.abs(T_final - T_anal) * T0  # error absolut en K
+    errors[k, :] = (np.abs(T_final - T_anal) * T0)  # error absolut en K
 
-    ax[1].plot(x_desnorm, errors[h[k]], color=colors[h[k]], linewidth=1.5, label=rf"$\Delta t={h[k]}\Delta x^2$")
+    #gràfica errors
+    ax[1].plot(x_desnorm, errors[k, :], color=colors[k], linewidth=1.5, label=rf"$\Delta t={h[k]}\Delta x^2$")
 
-# la solució analítica és la mateixa per a tots dos (mateix t_fin)
+#solució analítica
 ax[0].plot(x_desnorm, T_desnorm, ':', color='k', linewidth=1, label='Analítica')
 
 
