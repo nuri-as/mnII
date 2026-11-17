@@ -2,6 +2,19 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
+
+# Ticks apuntant cap a dins
+plt.rcParams["xtick.direction"] = "in"
+plt.rcParams["ytick.direction"] = "in"
+
+# Mostrar els ticks també a la part superior + dreta
+plt.rcParams["xtick.top"] = True
+plt.rcParams["ytick.right"] = True
+
+# fer els subticks que son eks que es troben entremig.
+plt.rcParams["xtick.minor.visible"] = True
+plt.rcParams["ytick.minor.visible"] = True
+
 #constants i més
 T_cos = 36.5+273 #K, temperatura inicial i a la frontera
 z = 0.56 #W/(m*K)
@@ -42,11 +55,9 @@ t_desnorm = t_max*t0
 
 plt.plot(x_desnorm, T_desnorm, color="royalblue", linewidth=2)
 
-plt.title(rf"Perfil de temperatura a $t_a \approx {t_desnorm:.2f}$ s")
 plt.xlabel("x (m)")
 plt.ylabel("T (k)")
 
-plt.grid(True, alpha=0.3)
 plt.show()
 
 
