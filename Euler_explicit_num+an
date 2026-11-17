@@ -4,6 +4,19 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+# Ticks apuntant cap a dins
+plt.rcParams["xtick.direction"] = "in"
+plt.rcParams["ytick.direction"] = "in"
+
+# Mostrar els ticks també a la part superior + dreta
+plt.rcParams["xtick.top"] = True
+plt.rcParams["ytick.right"] = True
+
+# podem afegir tmb subticks
+plt.rcParams["xtick.minor.visible"] = True
+plt.rcParams["ytick.minor.visible"] = True
+
+
 
 #Definim primer les condicions inicials
 T_cos = 36.5 + 273 #K, temperatura inicial i a la frontera
@@ -97,5 +110,4 @@ for k in range(len(h)):
     plt.legend()
     plt.xlabel('x (m)')
     plt.ylabel('T (k)')
-    plt.title('Distribució de temperatura per a h= ' + str(h[k]))
     plt.show()
