@@ -12,6 +12,20 @@ sigma = 0.472 #S/m
 alpha = z/(cv*rho)
 Delta_V = 40 #V
 
+
+# Ticks apuntant cap a dins
+plt.rcParams["xtick.direction"] = "in"
+plt.rcParams["ytick.direction"] = "in"
+
+# Mostrar els ticks també a la part superior + dreta
+plt.rcParams["xtick.top"] = True
+plt.rcParams["ytick.right"] = True
+
+# podem afegir tmb subticks
+plt.rcParams["xtick.minor.visible"] = True
+plt.rcParams["ytick.minor.visible"] = True
+
+
 #enunciat
 t_max=0.025
 N=101
@@ -95,7 +109,6 @@ for k in range(len(h)):
 
     plt.xlabel('x (m)')
     plt.ylabel(r"$|T_{explícit} - T_{analític}|$ (k)")
-    plt.title('Error entre solució analítica i numèrica per cada h')
 
     plt.legend()
 
