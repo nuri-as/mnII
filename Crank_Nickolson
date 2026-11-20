@@ -1,0 +1,105 @@
+import numpy as np
+import matplotlib
+import matplotlib.pyplot as plt
+
+# dades (cts) tot això és el que ja tenim
+T_cos = 36.5 + 273
+z = 0.56
+cv = 3698
+rho = 1081
+sigma = 0.472
+alpha = z/(cv*rho)
+Delta_V = 40
+
+t_max = 0.025
+N = 101
+
+T0 = sigma * (Delta_V)**2 / (2*z)
+d = 0.02
+t0 = d**2/alpha
+
+
+def T_analitica(x_tilde, t_tilde, Tcos, T0, n_termes):
+    T = Tcos / T0
+    for n in range(1, n_termes + 1):
+        p = (2*n-1)*np.pi
+        ter_temp = (1.0 - np.exp(-(p**2) * t_tilde)) / (p**2)
+        ter_pos = np.sin(p * x_tilde)
+        T += (4/p * ter_temp * ter_pos)
+    return T
+
+#ara sí comencem amb gauss seidel
+# hem aillat T_i^(n+1) 
+
+
+def gauss_seidel(T_old, T_new, g, Delta_t, T_front, tol=1e-12, max_iter=10000): 
+    N = len(T_old)
+
+    # terme independent (depèn només del pas anterior) i és el que tenim a l'esquerra de l'equació matricial.
+    b = (g/2)*T_old[:-2] + (1-g)*T_old[1:-1] + (g/2)*T_old[2:] + Delta_t
+    n_it = 0 #contador iteracions
+    for it in range(max_iter):
+        error = 0.0
+        for i in range(1, N-1):
+            nou = (b[i-1] + (g/2)*(T_new[i-1] + T_new[i+1])) / (1 + g) #Aquest seria el terme T_i que hem aïllat de cada fila.
+            error = max(error, abs(nou - T_new[i])) #Aquestes son ESTIMACIONS per tant pararem quan siguin lo suficientment semblants entre elles.
+            T_new[i] = nou
+        n_it = it + 1
+        if error < tol:
+            break
+    return T_new, n_it
+
+#T_old seria T_n-1, T_new es el terme n+1, g es la gamma
+
+#espaiats
+Delta_x = 1/(N-1)
+x_espai = np.linspace(0, 1, N)
+
+#llista dels diferents h's i colors
+h = [0.51, 0.49, 0.25, 5.0]
+colors = ['indianred', 'salmon', 'pink', 'darkorange']
+
+#fem el bucle per teure cada espaiat temporalk per cada t i la gamma (que anomenem g)
+
+for k in range(len(h)):
+    Delta_t = h[k]*Delta_x**2
+    t_passes = int(round(t_max/Delta_t))
+    g = Delta_t/Delta_x**2
+
+    T = np.full(N, T_cos/T0)            # coneixem els contorns
+    iteracions = []
+
+    for j in range(t_passes):
+        T_old = T.copy() #guarda la solució del pas anterior (Tⁿ), de la qual surt el terme independent b. X.copy() ens copia un vector i el guarda a umn lloc difernet.
+        # Agafem el pas anterior com la primera estimació (T_new = T_old)
+        T, n_it = gauss_seidel(T_old, T.copy(), g, Delta_t, T_cos/T0) #aqui cridem la nostra funció que ens hem definit abans per treure la T nova
+        iteracions.append(n_it)
+
+    t_real = t_passes*Delta_t
+    T_exacta = T_analitica(x_espai, t_real, T_cos, T0, 1000)*T0
+    T_GS = T*T0
+
+
+    err = np.max(np.abs(T_GS - T_exacta))
+    print(f"h = {h[k]:>5}: passos = {t_passes:>5}, it. G-S per pas (mitjana) = "
+          f"{np.mean(iteracions):.1f}, error màxim vs analítica = {err:.2e} K")
+
+    # fem la figura per a cada h separadamentsd
+    fig, ax = plt.subplots(figsize=(6, 4))
+    ax.plot(x_espai*d, T_GS, color=colors[k], label='Crank-Nicolson + Gauss-Seidel')
+    ax.plot(x_espai*d, T_exacta, color='royalblue', linestyle='--', label='Analítica')
+
+    # les línies que ens marquen la zona dolenta i per tant on ens interessa veure si podem actuar o no.
+    ax.axhline(y=323, color='r', linestyle='--', linewidth=1,
+               label='T = 323 K = 50 ºC')   # el teixit sa no ha d'excedir aquesta temperatura
+    ax.axvline(x=0.0075, color='grey', linestyle='--', linewidth=1)  # límits de la regió malalta
+    ax.axvline(x=0.0125, color='grey', linestyle='--', linewidth=1)
+
+    ax.legend()
+    ax.set_xlabel('x (m)')
+    ax.set_ylabel('T (K)')
+    ax.set_title('Gauss-Seidel per a h = ' + str(h[k]))
+    fig.tight_layout()
+    fig.savefig(f"crank_nicolson_gs_h{h[k]}.png", dpi=130)
+
+plt.show()   
