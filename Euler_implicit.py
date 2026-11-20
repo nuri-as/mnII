@@ -56,8 +56,10 @@ colors = ['deeppink', 'turquoise']
 
 #perquè la lletra es vegi més gran
 plt.rcParams.update({
-    'font.size': 13,
-    'xtick.labelsize': 11
+    'xtick.labelsize': 11,
+    'ytick.labelsize':11,
+    'axes.labelsize': 14,
+    'legend.fontsize': 11
 })
 fig, ax = plt.subplots(1, 2, figsize=(13, 5)) #creem una figura ax on podrem posar 2 subplots
 
@@ -103,8 +105,8 @@ for k in range(len(h)):
     T_impl = T_final*T0
     t_desnorm = t_max * t0
 
-    #gràfica solcio implicita
-    ax[0].plot(x_desnorm, T_impl, color=colors[k], linewidth=2, label=rf'Euler implícit, $\Delta t={h[k]}\Delta x^2$')
+    #gràfica solucio implicita
+    ax[0].plot(x_desnorm, T_impl, color=colors[k], linewidth=2, label=rf'$\Delta t={h[k]}\Delta x^2$')
 
     """
     Càlcul dels errors
@@ -114,18 +116,29 @@ for k in range(len(h)):
     #gràfica errors
     ax[1].plot(x_desnorm, errors[k, :], color=colors[k], linewidth=1.5, label=rf"$\Delta t={h[k]}\Delta x^2$")
 
-#solució analítica
+#gràfica solució analítica i numèrica
+
 ax[0].plot(x_desnorm, T_desnorm, ':', color='k', linewidth=1, label='Analítica')
+ax[0].axhline(y=323, color='r', linestyle='--', linewidth=1, label='T = 323K = 50ºC') #fem una línia per veure que el teixit sa no excedeix d'aquesta temperatura
+ax[0].axvline(x=0.0075, color='grey', linestyle='--', linewidth=1) #marquem els límits de la regió malalta
+ax[0].axvline(x=0.0125, color='grey', linestyle='--', linewidth=1)
 
-
-ax[0].set_title(rf"Perfil de temperatura a $t_a \approx {t_desnorm:.2f}$ s")
+# ax[0].set_title(rf"Perfil de temperatura a $t_a \approx {t_desnorm:.2f}$ s") #no podem posar titols
 ax[0].set_xlabel('x (m)')
 ax[0].set_ylabel('T (K)')
-ax[0].legend()
+#posem que surtin els guions a tots els eixos i vagin cap a dins:
+ax[0].tick_params(axis='both', which='both', direction='in', top=True, right=True)
 
-ax[1].set_title("Error numèric per cada mallat")
+ax[0].legend(loc='lower right')
+
+#gràfica de l'error
+
+# ax[1].set_title("Error numèric per cada mallat") #no podem posar titols
 ax[1].set_xlabel('x (m)')
 ax[1].set_ylabel(r'$|T_{implícit} - T_{analític}|$ (K)')
+
+#posem que surtin els guions a tots els eixos i vagin cap a dins:
+ax[1].tick_params(axis='both', which='both', direction='in', top=True, right=True)
 ax[1].legend()
 
 plt.tight_layout()
