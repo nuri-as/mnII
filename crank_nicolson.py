@@ -91,8 +91,10 @@ for k in range(len(dt)):
 #Guardem també l'error per cada mallat
   errors[h[k]] = np.abs(Tcn[-1,:]-Tanal)
 #Creem les respectives figures per cada mallat, desnormalitzant els valors multiplicant pel valor característic en cada cas
-  ax[0].plot(d*xnorm, T0*Tfinal[h[k]], color=colors[k], linewidth=2, label=rf'$\Delta t={h[k]}\Delta x^2$')
-  ax[1].plot(d*xnorm, errors[h[k]], color=colors[k], linewidth=1.5, label=rf"$\Delta t={h[k]}\Delta x^2$")
+#Canviem els gruixos per poder veure si realment ambdós colors estan superposats (sinó només es veu un color (un h))
+  llista_gruixos=[5,1] 
+  ax[0].plot(d*xnorm, T0*Tfinal[h[k]], color=colors[k], linewidth=llista_gruixos[k], label=rf'$\Delta t={h[k]}\Delta x^2$')
+  ax[1].plot(d*xnorm, errors[h[k]], color=colors[k], linewidth=llista_gruixos[k], label=rf"$\Delta t={h[k]}\Delta x^2$")
 #Desnormalizem també el temps
 t_desnorm = t0*t_max
 
@@ -106,7 +108,7 @@ ax[0].axhline(y=323, color='r', linestyle='--', linewidth=1, label='T = 323K = 5
 ax[0].axvline(x=0.0075, color='grey', linestyle='--', linewidth=1) #marquem els límits de la regió malalta
 ax[0].axvline(x=0.0125, color='grey', linestyle='--', linewidth=1)
 
-ax[0].set_title(rf"Perfil de temperatura a $t_a \approx {t_desnorm:.2f}$ s") #no podem posar titols
+# ax[0].set_title(rf"Perfil de temperatura a $t_a \approx {t_desnorm:.2f}$ s") #no podem posar titols
 ax[0].set_xlabel('x (m)')
 ax[0].set_ylabel('T (K)')
 #posem que surtin els guions a tots els eixos i vagin cap a dins:
@@ -116,7 +118,7 @@ ax[0].legend(loc='lower right')
 
 #gràfica de l'error
 
-ax[1].set_title("Error numèric per cada mallat") #no podem posar titols
+# ax[1].set_title("Error numèric per cada mallat") #no podem posar titols
 ax[1].set_xlabel('x (m)')
 ax[1].set_ylabel(r'$|T_{Crank-Nicolson} - T_{analític}|$ (K)')
 
