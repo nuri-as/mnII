@@ -36,7 +36,6 @@ def T_analitica(x_tilde, t_tilde, Tcos, T0, n_termes):
 
     T+= (4/p * ter_temp * ter_pos)
   return T
-
 """
 CRANK-NICOLSON
 """
@@ -46,13 +45,13 @@ dx = 1/(N-1)
 dt = [h[0]*(dx)**2,h[1]*(dx)**2 ]
 
 xnorm = np.linspace(0,1,N)
-Tcn = np.full(N, Tcos/T0)
 #com hem fet amb l'esquema d'Euler implícit, definim uns paràmetres límits per les nostres iteracions
 error_tol = 10**(-10) #fitem l'error que volem obtenir
 max_iter = 10000 #limitem les iteracions realitzades
 Tfinal = {}
 errors = {}
 colors = ["lightblue","deeppink"]
+#Modifica la mida del text en els gràfics
 plt.rcParams.update({
     'xtick.labelsize': 11,
     'ytick.labelsize':11,
@@ -60,6 +59,8 @@ plt.rcParams.update({
     'legend.fontsize': 11
 })
 fig, ax = plt.subplots(1, 2, figsize=(13, 5))
+#Invoquem la funció analítica per tal de comparar-la amb el resultat numèric més endevant
+Tanal = T_analitica(xnorm,t_max,Tcos,T0,1000)
 
 #fem un bucle per calcular el resultat numèric pels dos mallats demanats
 for k in range(len(dt)):
@@ -86,8 +87,6 @@ for k in range(len(dt)):
         break
 #Guardem els resultats per cada valor de h
   Tfinal[h[k]] = Tcn[-1, :].copy()
-#Invoquem la funció analítica per tal de comparar-les
-  Tanal = T_analitica(xnorm,t_max,Tcos,T0,1000)
 #Guardem també l'error per cada mallat
   errors[h[k]] = np.abs(Tcn[-1,:]-Tanal)
 #Creem les respectives figures per cada mallat, desnormalitzant els valors multiplicant pel valor característic en cada cas
@@ -97,10 +96,6 @@ for k in range(len(dt)):
   ax[1].plot(d*xnorm, errors[h[k]], color=colors[k], linewidth=llista_gruixos[k], label=rf"$\Delta t={h[k]}\Delta x^2$")
 #Desnormalizem també el temps
 t_desnorm = t0*t_max
-
-
-#grafiquem, aplicant els factors corresponents a cada cas per desnoramlitzar les magnituds
-
 #gràfica solució analítica i numèrica
 
 ax[0].plot(d*xnorm, T0*Tfinal[h[k]], ':', color='k', linewidth=1, label='Analítica')
@@ -108,7 +103,7 @@ ax[0].axhline(y=323, color='r', linestyle='--', linewidth=1, label='T = 323K = 5
 ax[0].axvline(x=0.0075, color='grey', linestyle='--', linewidth=1) #marquem els límits de la regió malalta
 ax[0].axvline(x=0.0125, color='grey', linestyle='--', linewidth=1)
 
-# ax[0].set_title(rf"Perfil de temperatura a $t_a \approx {t_desnorm:.2f}$ s") #no podem posar titols
+# ax[0].set_title(rf"Perfil de temperatura a $t_a \approx {t_desnorm:.2f}$ s")
 ax[0].set_xlabel('x (m)')
 ax[0].set_ylabel('T (K)')
 #posem que surtin els guions a tots els eixos i vagin cap a dins:
@@ -118,7 +113,7 @@ ax[0].legend(loc='lower right')
 
 #gràfica de l'error
 
-# ax[1].set_title("Error numèric per cada mallat") #no podem posar titols
+# ax[1].set_title("Error numèric per cada mallat") 
 ax[1].set_xlabel('x (m)')
 ax[1].set_ylabel(r'$|T_{Crank-Nicolson} - T_{analític}|$ (K)')
 
